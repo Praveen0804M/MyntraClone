@@ -1,98 +1,295 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Entypo from "@expo/vector-icons/Entypo";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedProductCategory, setSelectedProductCategory] = useState("Fashion");
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const categories = ["All", "Men", "Women", "Kids"];
+
+  const productCategory = [
+    { id: 1, name: "Fashion", image: require('../../assets/images/fashion.jpg') },
+    { id: 2, name: "Beauty", image: require('../../assets/images/beauty.jpg') },
+    { id: 3, name: "Home & Living", image: require('../../assets/images/homeandliving.jpg') },
+    { id: 4, name: "Footwear", image: require('../../assets/images/footwear.jpg') },
+    { id: 5, name: "Accessories", image: require('../../assets/images/accessories.jpg') },
+  ];
+
+  const brands = [
+    { id: 1, name: "Nike", image: require('../../assets/images/nike.jpg') },
+    { id: 2, name: "Adidas", image: require('../../assets/images/adidas.jpg') },
+    { id: 3, name: "Titan", image: require('../../assets/images/titan.jpg') },
+  ];
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const res = await fetch("https://dummyjson.com/products");
+    const data = await res.json();
+    setProducts(data?.products || []);
+  };
+
+  return (
+    <LinearGradient
+      colors={["orange", "yellow"]} // top → bottom
+      style={{ flex: 1 }}
+    >
+      <ScrollView style={{ flex: 1, paddingTop: 40 }}>
+        {/* 🔹 Header */}
+        <View style={styles.header}>
+          <View style={styles.locationContainer}>
+            <Entypo name="location-pin" size={20} color="black" />
+            <Text style={styles.headerText}>Deliver to, 452001</Text>
+          </View>
+
+        </View>
+
+        {/* Location + Search */}
+        <View style={styles.locationAndSearchContainer}>
+          <View style={styles.searchandIconsContainer}>
+            <View style={styles.myntraImageContainer}>
+              <Image
+                source={require('../../assets/images/myntraLogo.png')}
+                style={{ width: 35, height: 35 }}
+              />
+              <View style={styles.searchContainer}>
+                <TextInput
+                  placeholder="Search"
+                  style={styles.searchInput}
+                />
+                <EvilIcons name="search" size={24} color="black" />
+              </View>
+            </View>
+            <View style={styles.bellAccountContainer}>
+              <TouchableOpacity>
+                <AntDesign name="bell" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <EvilIcons name="heart" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <MaterialCommunityIcons name="account" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        {/* 🔹 Categories */}
+        <FlatList
+          data={categories}
+          horizontal
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.categoryTab,
+                { borderBottomColor: item === selectedCategory ? "red" : "transparent" },
+              ]}
+              onPress={() => setSelectedCategory(item)}
+            >
+              <Text style={{ color: item === selectedCategory ? "red" : "black", fontSize: 16 }}>
+                {item}
+              </Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+
+        {/* 🔹 Product Category */}
+        <FlatList
+          data={productCategory}
+          horizontal
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => setSelectedProductCategory(item.name)} style={styles.productCategory}>
+              <Image source={item.image} style={styles.productImage} />
+              <Text style={{ textAlign: "center", marginTop: 10, fontSize: 15, color: selectedProductCategory === item.name ? "red" : "black" }}>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+
+        {/* 🔹 Brands */}
+        <FlatList
+          data={brands}
+          horizontal
+          keyExtractor={(item) => item.id.toString()}
+          pagingEnabled
+          renderItem={({ item }) => (
+            <View style={styles.brandCard}>
+              <Image source={item.image} style={styles.brandImage} />
+              <Text style={styles.brandText}>{item.name}</Text>
+            </View>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+
+        {/* 🔹 Products Grid */}
+        <FlatList
+          data={products}
+          keyExtractor={(item:any) => item?.id.toString()}
+          numColumns={2}
+          scrollEnabled={false}
+          renderItem={({ item }:any) => (
+            <TouchableOpacity
+              style={styles.productCard}
+              onPress={() =>
+                router.push({
+                  pathname: "/product",
+                  params: { item: JSON.stringify(item) },
+                })
+              }
+            >
+              <Image source={{ uri: item.thumbnail }} style={styles.productThumb} />
+              <Text numberOfLines={1} style={{ fontWeight: "bold" }}>
+                {item?.title}
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <FontAwesome name="rupee" size={14} color="black" />
+                <Text>{item?.price}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  headerText: { fontSize: 14, fontWeight: "bold" },
+  walletContainer: { flexDirection: "row", alignItems: "center" },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    backgroundColor: "red",
+  },
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 10,
+    // backgroundColor: "#f2f2f2",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  iconsRow: { flexDirection: "row", gap: 8 },
+  categoryTab: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 2,
+    marginLeft: 10,
+  },
+  productCategory: { alignItems: "center", margin: 10 },
+  productImage: { width: 100, height: 100, borderRadius: 10 },
+  brandCard: { width: 410, margin: 10, borderRadius: 8, overflow: "hidden" },
+  brandImage: { width: "100%", height: 200 },
+  brandText: {
+    textAlign: "center",
+    padding: 8,
+    fontSize: 18,
+    fontWeight: "bold",
+    backgroundColor: "#333",
+    color: "white",
+  },
+  productCard: {
+    flex: 1,
+    margin: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+  },
+  productThumb: { width: "100%", height: 150, borderRadius: 8, marginBottom: 8 },
+  locationAndSearchContainer: {
+    height: 60,
+    width: '100%',
+    paddingHorizontal: 10,
+    // backgroundColor: 'red',
+  },
+  locationandRupeeContainer: {
+    height: '50%',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  locationContainer: {
+    width: '85%',
+    height: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  deliverToText: { fontSize: 16, color: 'black' },
+  locationText: { fontSize: 16, fontWeight: 'bold', color: 'black' },
+  rupeeContainer: {
+    width: '15%',
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  rupeeText: { fontSize: 16, color: 'black', marginLeft: 5 },
+  searchandIconsContainer: {
+    height: '80%',
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
+  myntraImageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    width: '75%',
+    height: '90%',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  searchInput: { height: '100%', width: '80%', paddingHorizontal: 10 },
+  bellAccountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '25%',
+    height: '90%',
+    borderRadius: 10,
+    justifyContent: 'space-around',
+    paddingLeft: 5,
+  },
+
+
+
 });
